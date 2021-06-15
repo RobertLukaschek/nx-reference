@@ -1,0 +1,152 @@
+{
+  "version": 1,
+  "cli": {
+    "defaultCollection": "@nrwl/angular"
+  },
+  "defaultProject": "wiki",
+  "schematics": {
+    "@nrwl/angular": {
+      "application": {
+        "linter": "eslint"
+      },
+      "library": {
+        "linter": "eslint"
+      },
+      "storybook-configuration": {
+        "linter": "eslint"
+      }
+    },
+    "@nrwl/angular:application": {
+      "style": "scss",
+      "linter": "eslint",
+      "unitTestRunner": "jest",
+      "e2eTestRunner": "cypress"
+    },
+    "@nrwl/angular:library": {
+      "style": "scss",
+      "linter": "eslint",
+      "unitTestRunner": "jest"
+    },
+    "@nrwl/angular:component": {
+      "style": "scss"
+    }
+  },
+  "projects": {
+    "wiki": {
+      "projectType": "application",
+      "root": "apps/wiki",
+      "sourceRoot": "apps/wiki/src",
+      "prefix": "nx-reference",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/wiki",
+            "index": "apps/wiki/src/index.html",
+            "main": "apps/wiki/src/main.ts",
+            "polyfills": "apps/wiki/src/polyfills.ts",
+            "tsConfig": "apps/wiki/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": ["apps/wiki/src/favicon.ico", "apps/wiki/src/assets"],
+            "styles": ["apps/wiki/src/styles.scss"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "apps/wiki/src/environments/environment.ts",
+                  "with": "apps/wiki/src/environments/environment.prod.ts"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "browserTarget": "wiki:build:production"
+            },
+            "development": {
+              "browserTarget": "wiki:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "wiki:build"
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "apps/wiki/src/**/*.ts",
+              "apps/wiki/src/**/*.html"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/wiki"],
+          "options": {
+            "jestConfig": "apps/wiki/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "wiki-e2e": {
+      "root": "apps/wiki-e2e",
+      "sourceRoot": "apps/wiki-e2e/src",
+      "projectType": "application",
+      "architect": {
+        "e2e": {
+          "builder": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/wiki-e2e/cypress.json",
+            "tsConfig": "apps/wiki-e2e/tsconfig.e2e.json",
+            "devServerTarget": "wiki:serve:development"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "wiki:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/wiki-e2e/**/*.{js,ts}"]
+          }
+        }
+      }
+    }
+  }
+}
